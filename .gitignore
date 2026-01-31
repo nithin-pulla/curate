@@ -48,3 +48,7 @@ Thumbs.db
 pgdata/
 *.db
 *.sqlite3
+
+# Documentation Exclusions
+PRDandTDD.docx
+PRDandTDD.pdf

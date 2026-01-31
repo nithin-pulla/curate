@@ -1,0 +1,50 @@
+# Python
+venv/
+__pycache__/
+.env
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.pytest_cache/
+.mypy_cache/
+
+# Flutter
+.dart_tool/
+build/
+flutter_export.json
+.pub-cache/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# System
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local Database & Data
+pgdata/
+*.db
+*.sqlite3

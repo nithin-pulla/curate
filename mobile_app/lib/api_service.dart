@@ -2,11 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'models.dart';
 
-class ApiService {
-  // FIXED: Removed 'dart:io' to prevent Web crashes.
-  // Since you are testing on Chrome (Web) or iOS Simulator, localhost is correct.
-  // Note: If you go back to Android Emulator later, you will need to change this to 'http://10.0.2.2:8000/api/v1'
-  final String _baseUrl = 'http://127.0.0.1:8000/api/v1';
+  // Use build-time configuration: flutter run --dart-define=API_BASE_URL=http://localhost:8000/api/v1
+  static const String _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: ''); 
+  
+  // Note: If empty, throw error or handle gracefully in constructor (or just assume user will provide it)
 
   Future<List<MealBundle>> fetchBundles(String userId, String restaurantId) async {
     final url = Uri.parse('$_baseUrl/recommendations');
@@ -40,6 +39,37 @@ class ApiService {
       print('--- Network Error ---');
       print(e);
       throw Exception('Network error: $e');
+    }
+  }
+  Future<String?> createUser(String name, String email, String preferences, List<String> allergens) async {
+    final url = Uri.parse('$_baseUrl/users');
+    
+    final body = jsonEncode({
+      "name": name,
+      "email": email,
+      "preferences": preferences,
+      "allergens": allergens
+    });
+
+    try {
+      print('--- Create User Request ---');
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: body,
+      );
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body);
+        print('SUCCESS: User Created ID: ${json['user_id']}');
+        return json['user_id'];
+      } else {
+        print('ERROR: ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Network Error: $e');
+      return null;
     }
   }
 }

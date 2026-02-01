@@ -1,0 +1,281 @@
+{
+    "menu": [
+        {
+            "grouping": "Daily Specials",
+            "items": [
+                {
+                    "item": "Cut Mirchi",
+                    "price": 6.99
+                },
+                {
+                    "item": "Punukulu",
+                    "price": 5.50
+                },
+                {
+                    "item": "Idly (3)",
+                    "price": 7.25
+                },
+                {
+                    "item": "Ghee Idly (3)",
+                    "price": 8.50
+                },
+                {
+                    "item": "Sambar Idly (2)",
+                    "price": 7.99
+                },
+                {
+                    "item": "Podi Idly (3)",
+                    "price": 8.25
+                },
+                {
+                    "item": "Medhu Vada (4)",
+                    "price": 9.00
+                },
+                {
+                    "item": "Sambar Vada (3)",
+                    "price": 8.50
+                },
+                {
+                    "item": "Tomato Bath (Upma)",
+                    "price": 7.50
+                },
+                {
+                    "item": "Mysore Bonda",
+                    "price": 6.75
+                }
+            ]
+        },
+        {
+            "grouping": "Dosa Specials",
+            "items": [
+                {
+                    "item": "Plain Dosa",
+                    "price": 8.99
+                },
+                {
+                    "item": "Podi Onion Dosa",
+                    "price": 10.50
+                },
+                {
+                    "item": "Podi Onion Masala Dosa",
+                    "price": 11.99
+                },
+                {
+                    "item": "Onion Dosa",
+                    "price": 9.50
+                },
+                {
+                    "item": "Ghee Podi Dosa",
+                    "price": 10.25
+                },
+                {
+                    "item": "Ghee Podi Masala Dosa",
+                    "price": 11.75
+                },
+                {
+                    "item": "Kara Dosa",
+                    "price": 10.00
+                },
+                {
+                    "item": "Kara Onion Dosa",
+                    "price": 10.75
+                },
+                {
+                    "item": "Masala Dosa",
+                    "price": 10.50
+                },
+                {
+                    "item": "Onion Masala Dosa",
+                    "price": 11.00
+                },
+                {
+                    "item": "Ghee Dosa",
+                    "price": 10.25
+                },
+                {
+                    "item": "Ghee Masala Dosa",
+                    "price": 11.50
+                },
+                {
+                    "item": "Podi Dosa",
+                    "price": 9.75
+                },
+                {
+                    "item": "Podi Masala Dosa",
+                    "price": 10.99
+                },
+                {
+                    "item": "Mysore Plain Dosa",
+                    "price": 10.50
+                },
+                {
+                    "item": "Mysore Masala Dosa",
+                    "price": 11.99
+                },
+                {
+                    "item": "Rava Dosa",
+                    "price": 11.25
+                },
+                {
+                    "item": "Onion Rava Dosa",
+                    "price": 12.00
+                },
+                {
+                    "item": "Rava Masala Dosa",
+                    "price": 12.50
+                },
+                {
+                    "item": "Onion Rava Masala Dosa",
+                    "price": 12.99
+                },
+                {
+                    "item": "Pesarattu",
+                    "price": 11.50
+                },
+                {
+                    "item": "Onion Pesarattu",
+                    "price": 12.25
+                },
+                {
+                    "item": "Masala Pesarattu",
+                    "price": 12.75
+                },
+                {
+                    "item": "Pesarattu Upma",
+                    "price": 13.50
+                },
+                {
+                    "item": "Uthappam",
+                    "price": 9.99
+                },
+                {
+                    "item": "Onion Uthappam",
+                    "price": 10.50
+                },
+                {
+                    "item": "Onion Chili Uthappam",
+                    "price": 10.99
+                },
+                {
+                    "item": "Onion Tomato Chili Uthappam",
+                    "price": 11.50
+                }
+            ]
+        },
+        {
+            "grouping": "Rice Specials",
+            "items": [
+                {
+                    "item": "Bisibela Bath",
+                    "price": 10.50
+                },
+                {
+                    "item": "Lemon Rice",
+                    "price": 8.99
+                },
+                {
+                    "item": "Hot Pongal",
+                    "price": 9.25
+                },
+                {
+                    "item": "Curd Rice",
+                    "price": 7.99
+                },
+                {
+                    "item": "Tamarind Rice",
+                    "price": 8.99
+                }
+            ]
+        },
+        {
+            "grouping": "Bread Corner",
+            "items": [
+                {
+                    "item": "Poori",
+                    "price": 9.50
+                }
+            ]
+        },
+        {
+            "grouping": "Cold Beverages",
+            "items": [
+                {
+                    "item": "Coke",
+                    "price": 2.50
+                },
+                {
+                    "item": "Sprite",
+                    "price": 2.50
+                },
+                {
+                    "item": "Thums Up",
+                    "price": 3.25
+                },
+                {
+                    "item": "Mango Lassi",
+                    "price": 4.50
+                },
+                {
+                    "item": "Bottled Water",
+                    "price": 1.99
+                }
+            ]
+        },
+        {
+            "grouping": "Hot Beverages",
+            "items": [
+                {
+                    "item": "Coffee",
+                    "price": 3.50
+                },
+                {
+                    "item": "Masala Chai",
+                    "price": 3.50
+                }
+            ]
+        },
+        {
+            "grouping": "Deserts",
+            "items": [
+                {
+                    "item": "Rava Kesari",
+                    "price": 5.99
+                }
+            ]
+        },
+        {
+            "grouping": "Combos",
+            "items": [
+                {
+                    "item": "Idly Vada Combo",
+                    "price": 11.50
+                },
+                {
+                    "item": "Idly Vada Pongal Combo",
+                    "price": 13.99
+                },
+                {
+                    "item": "Idly Vada Upma Combo",
+                    "price": 13.50
+                }
+            ]
+        },
+        {
+            "grouping": "Kids Corner",
+            "items": [
+                {
+                    "item": "Cheese Dosa",
+                    "price": 7.99
+                },
+                {
+                    "item": "Cone Dosa",
+                    "price": 7.50
+                },
+                {
+                    "item": "Chocolate Dosa",
+                    "price": 8.50
+                }
+            ]
+        }
+    ]
+}

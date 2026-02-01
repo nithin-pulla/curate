@@ -9,6 +9,7 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(String, primary_key=True)  # UUID
+    name = Column(String, nullable=True) # Added for onboarding
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     
@@ -19,7 +20,7 @@ class User(Base):
     budget_setting = Column(Integer, default=2)  # 1: Cheap, 2: Moderate, 3: Expensive
     
     # Vector Embedding for Taste
-    taste_embedding = Column(Vector(1536))  # Dimensions depend on model, assuming OpenAI for now
+    taste_embedding = Column(Vector(768))  # Dimensions for Gemini text-embedding-004
 
 class Restaurant(Base):
     __tablename__ = 'restaurants'
@@ -50,6 +51,6 @@ class Dish(Base):
     is_available = Column(Boolean, default=True)
     
     # Vector Embedding for Dish
-    embedding = Column(Vector(1536))
+    embedding = Column(Vector(768))
     
     restaurant = relationship("Restaurant", back_populates="dishes")

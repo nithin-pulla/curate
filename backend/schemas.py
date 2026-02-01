@@ -30,12 +30,12 @@ class DishBase(BaseModel):
     name: str
     description: Optional[str] = None
     price: float
-    ingredients: List[str] = []
+    ingredients: Optional[List[str]] = []
     
-    # Strict validation via Enum
-    allergens: List[AllergenEnum] = []
+    # Relaxing Enum for MVP AI output compatibility
+    allergens: Optional[List[str]] = []
     
-    tags: List[str] = []
+    tags: Optional[List[str]] = []
     calories: Optional[int] = None
     spice_level: int = Field(default=0, ge=0, le=5) # 0-5 scale
     is_available: bool = True
@@ -93,3 +93,9 @@ class RecommendationRequest(BaseModel):
     restaurant_id: str
     hunger_level: Optional[str] = None
     mood: Optional[str] = None
+
+class UserOnboardingRequest(BaseModel):
+    name: str
+    email: EmailStr
+    preferences: str
+    allergens: List[str] = []

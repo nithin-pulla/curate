@@ -31,15 +31,24 @@ def check_imports():
 def check_db_connection():
     print("\n--- Checking Database Connection ---")
     from sqlalchemy import create_engine, text
+    from dotenv import load_dotenv
     
-    # URL provided by user
-    db_url = "postgresql://user:password@localhost:5435/curate_db"
+    load_dotenv()
+    
+    # URL from env
+    DB_USER = os.getenv("POSTGRES_USER")
+    DB_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+    DB_HOST = os.getenv("POSTGRES_SERVER")
+    DB_PORT = os.getenv("POSTGRES_PORT")
+    DB_NAME = os.getenv("POSTGRES_DB")
+    
+    db_url = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     
     try:
         engine = create_engine(db_url)
         with engine.connect() as connection:
             result = connection.execute(text("SELECT 1"))
-            print("Successfully connected to database.")
+            print(f"Successfully connected to database at {DB_HOST}:{DB_PORT}.")
         return True
     except Exception as e:
         print(f"❌ Database Connection Failed. Check Docker. Error: {e}")

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import '../restaurant_menu_screen.dart';
 import '../models.dart';
+import '../api_service.dart';
 
 class OnboardingScreen extends StatefulWidget {
   @override
@@ -75,18 +76,63 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     // "Gluten-Free" and "Vegetarian" are constraints, not strictly "Allergens" for the *safety* list 
     // unless we map them. For now, we just pass the ID and strict allergens.
     
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => RestaurantMenuScreen(
-          restaurantId: '67d606f7-509b-40c1-a91c-b18e5d3ee830',
-          currentUser: User(
-            id: 'c69791d1-e683-48e2-b9e5-82c42b452347',
-            allergensStrict: allergensForModel,
+    // Construct Persona String
+    final persona = "User prefers ${_q1SweetSavory} and ${_q2Texture} textures. "
+        "Current Vibe: ${_q3Vibe}. "
+        "Spice Tolerance: ${_q4Spice.round()}/10. "
+        "Comfort Food: ${_q6ChildhoodMeal.text.trim()}.";
+
+    // Call API
+    // Use dummy email/name for MVP or random
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final dummyEmail = "user_$timestamp@curate.com";
+
+    // Show Loading
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Curating your profile...")));
+
+    // Using a one-off instance of ApiService here, or could inject it
+    // Importing ApiService is needed at top of file
+    
+    // We need to import ApiService. It seems to be in parent directory relative to screens?
+    // Based on file structure: ../api_service.dart
+    
+    // BUT WAIT: I need to make the call async.
+    _createUserAndNavigate(persona, dummyEmail, allergensForModel);
+  }
+
+  Future<void> _createUserAndNavigate(String persona, String email, List<String> allergens) async {
+    // Import logic handled by existing imports if consistent, else I need to add import.
+    // Assuming ApiService is available via import '../api_service.dart'; which is usually true for this structure.
+    // Wait, the file has import '../models.dart'; but api_service is likely same level as models.
+    
+    // Correction: OnboardingScreen is in lib/screens/onboarding_screen.dart
+    // ApiService is in lib/api_service.dart.
+    // So import '../api_service.dart' is needed.
+    
+    final api = ApiService();
+    final userId = await api.createUser("Guest User", email, persona, allergens);
+
+    if (userId != null) {
+      if (!mounted) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RestaurantMenuScreen(
+            restaurantId: '67d606f7-509b-40c1-a91c-b18e5d3ee830', // Hardcoded Bistro 42 for MVP
+            currentUser: User(
+              id: userId,
+              allergensStrict: allergens,
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } else {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Failed to create profile. Please try again."),
+        backgroundColor: Colors.red,
+      ));
+    }
   }
 
   @override

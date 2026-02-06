@@ -46,33 +46,10 @@ def run_tests():
         print("❌ FAIL: Server not running. Please start 'docker-compose up'")
         return
 
-    # 3. Create User
-    print("\n[Step 2] Creating Test User Profile...")
-    user_payload = {
-        "name": "Hyderabadi Foodie",
-        "email": f"test_{int(time.time())}@example.com",
-        "preferences": "I love spicy South Indian tiffins like Dosa and Idly. I enjoy chutneys and podi.",
-        "allergens": [] 
-    }
-    
-    try:
-        r = requests.post(f"{BASE_URL}/users", json=user_payload)
-        r.raise_for_status()
-        user_id = r.json()["user_id"]
-        print(f"✅ User Created: {user_id}")
-    except Exception as e:
-        print(f"❌ FAIL: User creation error - {e}")
-        return
-
-    # 4. Get Restaurant ID
-    # We need to query the DB to get the ID created by the seeder.
-    # Quick hack: Use SQLAlchemy directly or fetch via API if we had a GetRestaurants endpoint.
-    # Since we don't present that endpoint in README/Task, let's peek directly using models imports 
-    # OR simpler: The seeder prints it? No, seeder doesn't return it easily to this process.
-    # Let's add a quick query using the code imports.
+    # Setup DB Connection for direct checks
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
-    from backend.models import Restaurant
+    from backend.models import Restaurant, User
     
     # Re-use connection string from main.py logic (env)
     DB_USER = os.getenv("POSTGRES_USER")
@@ -84,6 +61,63 @@ def run_tests():
     SQLALCHEMY_DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     engine = create_engine(SQLALCHEMY_DATABASE_URL)
     SessionLocal = sessionmaker(bind=engine)
+
+    # 3. User Setup (Static or Dynamic)
+    print("\n[Step 2] Setting up Test User...")
+    user_id = os.getenv("TEST_USER_ID")
+    test_password = os.getenv("TEST_USER_PASSWORD", "TestPassword123!")
+    test_prefs = os.getenv("TEST_USER_PREFERENCES", "I love spicy South Indian tiffins.")
+
+    if user_id:
+        print(f"⏩ Using Static Test User ID from .env: {user_id}")
+        # Ensure user exists in DB (since seeder wiped it)
+        db = SessionLocal()
+        existing_user = db.query(User).filter(User.id == user_id).first()
+        if not existing_user:
+            print(f"⚠️ User {user_id} missing in DB (wiped). Re-creating profile...")
+            
+            # Generate dummy embedding
+            from backend.main import get_gemini_embedding
+            pref_text = test_prefs
+            
+            # Create User directly
+            static_user = User(
+                id=user_id,
+                name="Static Test User",
+                email=f"test_static_{int(time.time())}@example.com", # Email doesn't matter for DB logic
+                hashed_password="managed_by_supabase",
+                constraints=[],
+                allergens_strict=[],
+                spice_tolerance=3,
+                budget_setting=2,
+                taste_embedding=get_gemini_embedding(pref_text)
+            )
+            db.add(static_user)
+            db.commit()
+            print("✅ Static User Re-seeded into DB.")
+        db.close()
+    else:
+        print("Creating New Test User...")
+        user_payload = {
+            "name": "Hyderabadi Foodie",
+            "email": f"test_{int(time.time())}@example.com",
+            "password": test_password, # Required for Supabase Auth
+            "preferences": test_prefs,
+            "allergens": [] 
+        }
+        
+        try:
+            r = requests.post(f"{BASE_URL}/users", json=user_payload)
+            r.raise_for_status()
+            user_id = r.json()["user_id"]
+            print(f"✅ User Created: {user_id}")
+        except Exception as e:
+            print(f"❌ FAIL: User creation error - {e}")
+            if hasattr(e, 'response') and e.response is not None:
+                print(f"Response: {e.response.text}")
+            return
+
+    # 4. Get Restaurant ID
     db = SessionLocal()
     restaurant = db.query(Restaurant).filter(Restaurant.name == "Ulavacharu Tiffins").first()
     

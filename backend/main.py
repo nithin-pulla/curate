@@ -7,6 +7,7 @@ from typing import List, Optional
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
+from supabase import create_client, Client
 
 from backend.models import Base, User, Dish
 from backend.schemas import MealBundle, RecommendationRequest, DishResponse, UserOnboardingRequest
@@ -19,6 +20,14 @@ GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 client = genai.Client(api_key=GOOGLE_API_KEY) if GOOGLE_API_KEY else None
 if not client:
     print("⚠️ WARNING: GOOGLE_API_KEY not set.")
+
+# Configure Supabase
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY) if SUPABASE_URL and SUPABASE_KEY else None
+
+if not supabase:
+    print("⚠️ WARNING: SUPABASE_URL or SUPABASE_KEY not set. Auth & Storage features will fail.")
 
 # Database Setup
 # Database Setup
@@ -195,19 +204,49 @@ def create_user(
     request: UserOnboardingRequest,
     db: Session = Depends(get_db)
 ):
-    # 1. Generate Embedding from Preferences
+    # 1. Supabase Auth Sign Up
+    supabase_user_id = None
+    if supabase:
+        try:
+            print(f"🔐 Registering user {request.email} in Supabase Auth...")
+            auth_response = supabase.auth.sign_up({
+                "email": request.email,
+                "password": request.password
+            })
+            if auth_response.user and auth_response.user.id:
+                supabase_user_id = auth_response.user.id
+                print(f"✅ Supabase Auth Success: {supabase_user_id}")
+            else:
+                # Handle case where user might already exist or confirmation required
+                # For MVP, if we get here but no ID, query via admin or assume error?
+                # Usually returns user object if success.
+                # If user exists, sign_up typically returns the existing user (if config allows) 
+                # or raises error. Let's assume critical failure if no ID for now.
+                print(f"⚠️ Supabase Auth Response invalid: {auth_response}")
+                # We can choose to fail hard or fallback. Let's fail hard for safety.
+                raise HTTPException(status_code=400, detail="Auth registration failed")
+        except Exception as e:
+            print(f"❌ Supabase Auth Error: {e}")
+            # Identify if user already exists
+            if "already registered" in str(e).lower() or "user_already_exists" in str(e).lower():
+                 raise HTTPException(status_code=400, detail="User email already registered")
+            raise HTTPException(status_code=500, detail=f"Auth Error: {str(e)}")
+    else:
+        # Fallback for dev mode without Supabase keys
+        import uuid
+        supabase_user_id = str(uuid.uuid4())
+        print(f"⚠️ Using Mock ID (Supabase not configured): {supabase_user_id}")
+
+    # 2. Generate Embedding from Preferences
     print(f"Generating profile for {request.name} based on: {request.preferences}")
     preference_embedding = get_gemini_embedding(request.preferences)
     
-    # 2. Create User Record
-    import uuid
-    new_user_id = str(uuid.uuid4())
-    
+    # 3. Create User Record in Postgres
     new_user = User(
-        id=new_user_id,
+        id=supabase_user_id, # Link UUIDs
         name=request.name,
         email=request.email,
-        hashed_password="mock_password_for_mvp", # Placeholder
+        hashed_password="managed_by_supabase", # No longer storing secrets here!
         constraints=[], # Can be expanded later
         allergens_strict=request.allergens,
         spice_tolerance=3, # Default
@@ -222,8 +261,10 @@ def create_user(
         return {"user_id": new_user.id}
     except Exception as e:
         db.rollback()
-        print(f"Error creating user: {e}")
-        raise HTTPException(status_code=500, detail="Failed to create user")
+        print(f"Error creating user DB record: {e}")
+        # If DB fails, we technically have an orphaned Auth user. 
+        # In prod, we'd delete the auth user too to maintain consistency.
+        raise HTTPException(status_code=500, detail="Failed to create user profile")
 
 @app.get("/health")
 def health_check():

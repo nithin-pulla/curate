@@ -97,5 +97,6 @@ class RecommendationRequest(BaseModel):
 class UserOnboardingRequest(BaseModel):
     name: str
     email: EmailStr
+    password: str
     preferences: str
     allergens: List[str] = []
